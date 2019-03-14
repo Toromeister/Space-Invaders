@@ -45,22 +45,3 @@ function draw(){
         }
     }
 }
-
-function keyPressed(){
-    switch(keyCode){
-        case RIGHT_ARROW:
-            moveRight = 1;
-            break;
-        case LEFT_ARROW:
-            moveLeft = 1
-            break;
-        case UP_ARROW:
-            shoot = 1/sec;
-            break;
-    }
-
-}
-
-function Enemies(){
-
-}
