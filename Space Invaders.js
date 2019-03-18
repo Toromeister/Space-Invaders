@@ -7,11 +7,11 @@ var posX = 1;
 var posY = 1;
 var marginY =75;
 var marginX = 100;
+var enemyArray = [];
 
 function setup(){
     createCanvas(xCanvasSize, yCanvasSize);
     rectMode(CENTER);
-    enemyArray = [];
     for(i=0; i<7; i++){
         enemyArray[i]=[];
         for(j=0; j<5; j++){
@@ -36,9 +36,9 @@ function draw(){
             enemyArray[i][j] = new Enemy(90*i+marginX+posX,50*j+marginY+posY,sizeEnemy);
 
             if(enemyArray[i][j].y > 500){
-                noLoop();
+            
             }
-            if(enemyArray[i][j].x > 770 ||enemyArray[i][j].x < 0){
+            if(enemyArray[i][j].x > 780 ||enemyArray[i][j].x < 0){
                 posY += speedY;
                 speedX = -speedX;
             }
