@@ -1,9 +1,10 @@
 var xCanvasSize = 800;
 var yCanvasSize = 600;
 var drops = [];
-var sizeEnemy = 35;
-var speedX = 5;
-var speedY = 5;
+var sizeEnemy = 40;
+var hastighet = 2;
+var speedX = hastighet;
+var speedY = hastighet;
 var posX = 1;
 var posY = 1;
 var marginY =75;
@@ -35,31 +36,56 @@ function draw(){
         if(drops[i].y <= 0){
             drops[i].delete();
         }
+        for(var j = 0; j < enemyArray.length; j++){
+            for(var l = 0; l < enemyArray[j].length; l++){
+                if(drops[i].hits(enemyArray[j][l]) && enemyArray[j][l].size>0){
+                    drops[i].delete();
+                    enemyArray[j][l].delete();
+                }
+            }
+        }
     }
-    for (var i = drops.length-1; i >= 0; i--) {
+    for(var i = drops.length-1; i >= 0; i--) {
         if (drops[i].toDel) {
           drops.splice(i, 1);
         }
     }
     //Enemy
-    for(i=0; i<enemyArray.length; i++){
-        for(j=0; j<enemyArray[i].length; j++){
+    for(var i=0; i<enemyArray.length; i++){
+        for(var j=0; j<enemyArray[i].length; j++){
             enemyArray[i][j].show();
+            if(enemyArray[i][j].toDel){
+                //debugger;
+                //enemyArray[i][j].splice(i,1)
+                enemyArray[i][j].size = 0;
+                enemyArray[i][j].toDel = false; 
+                //console.log(enemyArray[i])
+                if(erTomt(enemyArray)){
+                    setTimeout(nyArray(),2000);
+                    //hastighet++;
+                }
+            }
         }
     }
 
     posX += speedX;
 
-    for(i=0; i<enemyArray.length; i++){
-        for(j=0; j<enemyArray.length; j++){
-            enemyArray[i][j] = new Enemy(90*i+marginX+posX,50*j+marginY+posY,sizeEnemy);
+    for(var i=0; i<enemyArray.length; i++){
+        for(var j=0; j<enemyArray[i].length; j++){
 
-            if(enemyArray[i][j].y > 500){
+            if(enemyArray[i][j].size > 0){ //Enemies som ikke er skutt
+                enemyArray[i][j].move(90*i+marginX+posX,50*j+marginY+posY);
+                //enemyArray[i][j].move(speedX,0)
+                if(enemyArray[i][j].y > 500){
             
-            }
-            if(enemyArray[i][j].x > 780 ||enemyArray[i][j].x < 0){
-                posY += speedY;
-                speedX = -speedX;
+                }
+                if(enemyArray[i][j].x > xCanvasSize-(sizeEnemy/2)){
+                    posY += speedY;
+                    speedX = -hastighet;
+                }else if(enemyArray[i][j].x < (sizeEnemy/2)){
+                    posY += speedY;
+                    speedX = hastighet;
+                }
             }
         }
     }
@@ -78,7 +104,9 @@ function draw(){
         ship.setDir(1);
     } else if(ship.x > (xCanvasSize-10)){
         ship.setDir(-1);
+
     }
+    
 }
 
 function keyPressed(){
@@ -86,4 +114,24 @@ function keyPressed(){
         var drop = new Drop(ship.x, height);
         drops.push(drop);
       }
+}
+function nyArray(){
+    posX = 1;
+    posY = 1;
+    for(i=0; i<7; i++){
+        enemyArray[i]=[];
+        for(j=0; j<5; j++){
+            enemyArray[i][j] = new Enemy(90*i+marginX+posX,50*j+25+marginY+posY,sizeEnemy);
+        }
+    }
+}
+function erTomt(array){
+    for(let i = 0; i<array.length; i++){
+        console.log(array.length);
+        for(let j = 0; j<array[i].length; j++)
+        if(array[i][j].size>0){
+            return false;
+        }
+    }
+    return true;
 }
