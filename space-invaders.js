@@ -13,11 +13,13 @@ var enemyArray = [];
 var enemyDrops = [];
 var score = 0;
 var ship;
+var bildeEnemy;
 
 
 function setup(){
     createCanvas(xCanvasSize, yCanvasSize);
     rectMode(CENTER);
+    bildeEnemy = loadImage("enemy.png");
     for(i=0; i<7; i++){
         enemyArray[i]=[];
         for(j=0; j<5; j++){
@@ -38,6 +40,7 @@ function draw(){
     for(let i = 0; i < drops.length; i++){
         drops[i].show();
         drops[i].move();
+        
         if(drops[i].y <= 0){
             drops[i].delete();
         }
@@ -64,12 +67,14 @@ function draw(){
     //Enemy
     for(var i=0; i<enemyArray.length; i++){
         for(var j=0; j<enemyArray[i].length; j++){
-            enemyArray[i][j].show();
+            if(!enemyArray[i][j].isDel){
+                enemyArray[i][j].show();
+            } 
             if(enemyArray[i][j].toDel){
                 enemyArray[i][j].size = 0;
                 enemyArray[i][j].toDel = false; 
+                enemyArray[i][j].isDel = true;
                 if(erTomt(enemyArray)){
-                    setTimeout(nyArray(),2000);
                     hastighet += 0.2;
                 }
             }
@@ -80,13 +85,11 @@ function draw(){
 
     for(var i=0; i<enemyArray.length; i++){
         for(var j=0; j<enemyArray[i].length; j++){
-
-            if(enemyArray[i][j].size > 0){ //Enemies som ikke er skutt
+            if(!enemyArray[i][j].isDel){ //Enemies som ikke er skutt
                 enemyArray[i][j].move(90*i+marginX+posX,50*j+marginY+posY);
-                //enemyArray[i][j].move(speedX,0)
                 if(enemyArray[i][j].y > 520){
-                    nyArray();
-                    score=0;
+                    noLoop();
+                    setTimeout(function(){location.reload(true)},100);
                 }
                 if(enemyArray[i][j].x > xCanvasSize-(sizeEnemy/2)){
                     posY += speedY;
@@ -108,11 +111,11 @@ function draw(){
             enemyDrops[i].delete();
         }
         if(enemyDrops[i].hits(ship)){
-            nyArray();
-            score = 0;
             for(let i = 0; i<enemyDrops.length; i++){
                 enemyDrops[i].delete();
             }
+            noLoop();
+            setTimeout(function(){location.reload(true)},100);
         }
     }
     //Bevegelse
