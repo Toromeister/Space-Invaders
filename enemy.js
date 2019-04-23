@@ -4,12 +4,12 @@ class Enemy{
         this.y = y;
         this.size = size;
         this.toDel = false;
+        this.isDel = false;
     }
 
     show(){
-        fill(255);
-        //rect(this.x, this.y, this.size, this.size-6);
-        ellipse(this.x, this.y, this.size, this.size)
+        imageMode(CENTER);
+        image(bildeEnemy, this.x, this.y);
     }
     move(xpos, ypos){
         this.x = xpos;
