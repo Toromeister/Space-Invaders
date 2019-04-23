@@ -2,7 +2,7 @@ var xCanvasSize = 800;
 var yCanvasSize = 600;
 var drops = [];
 var sizeEnemy = 40;
-var hastighet = 2;
+var hastighet = 1;
 var speedX = hastighet;
 var speedY = 25;
 var posX = 1;
@@ -13,27 +13,37 @@ var enemyArray = [];
 var enemyDrops = [];
 var score = 0;
 var ship;
+var bildeShip
 var bildeEnemy;
+var lydPaa = true; //Anbefaler å ha lyd av grunnet lag etter et par runder, bare bytt verdien til false
+var lyder = [];
 
+function preload(){
+    lyder.push(loadSound("shoot.mp3"));
+    lyder.push(loadSound("enemykilled.mp3"));
+    lyder.push(loadSound("explosion.mp3"));
+}
 
 function setup(){
     createCanvas(xCanvasSize, yCanvasSize);
     rectMode(CENTER);
     bildeEnemy = loadImage("enemy.png");
+    bildeShip = loadImage("ship.png");
     for(i=0; i<7; i++){
         enemyArray[i]=[];
         for(j=0; j<5; j++){
             enemyArray[i][j] = new Enemy(90*i+marginX+posX,50*j+25+marginY+posY,sizeEnemy);
         }
     }
-    ship = new Ship(30, 20, 600);
+    ship = new Ship(580, 40, 40, 600);
 }
 
 function draw(){
-    background(51);
+    background(60);
     ship.show();
     ship.move();
-    text(score, 10, 30);
+    text("Score: " + score, 10, 30);
+    text("Highscore: " + localStorage.getItem("highscore"), 650, 30);
     textSize(20);
 
     //Fjerner skudd
@@ -46,8 +56,9 @@ function draw(){
         }
         for(var j = 0; j < enemyArray.length; j++){
             for(var l = 0; l < enemyArray[j].length; l++){
-                if(drops[i].hits(enemyArray[j][l]) && enemyArray[j][l].size>0){
-                    score +=10;
+                if(drops[i].hits(enemyArray[j][l]) && enemyArray[j][l].isDel == false){ //Når man treffer en enemy
+                    score += 10;
+                    playSound(1);
                     drops[i].delete();
                     enemyArray[j][l].delete();
                 }
@@ -74,8 +85,9 @@ function draw(){
                 enemyArray[i][j].size = 0;
                 enemyArray[i][j].toDel = false; 
                 enemyArray[i][j].isDel = true;
-                if(erTomt(enemyArray)){
+                if(isEmpty(enemyArray)){
                     hastighet += 0.2;
+                    newArray();
                 }
             }
         }
@@ -88,8 +100,7 @@ function draw(){
             if(!enemyArray[i][j].isDel){ //Enemies som ikke er skutt
                 enemyArray[i][j].move(90*i+marginX+posX,50*j+marginY+posY);
                 if(enemyArray[i][j].y > 520){
-                    noLoop();
-                    setTimeout(function(){location.reload(true)},100);
+                    gameOver();
                 }
                 if(enemyArray[i][j].x > xCanvasSize-(sizeEnemy/2)){
                     posY += speedY;
@@ -114,8 +125,7 @@ function draw(){
             for(let i = 0; i<enemyDrops.length; i++){
                 enemyDrops[i].delete();
             }
-            noLoop();
-            setTimeout(function(){location.reload(true)},100);
+            gameOver();
         }
     }
     //Bevegelse
@@ -140,7 +150,6 @@ function draw(){
 function enemyDropProb(array){
     prob = 50+(array.length*3);
     var randomTall = Math.floor(random(prob));
-    //console.log(randomTall);
     if(randomTall===1){
         makeEnemyDrop(enemyArray);
     }
@@ -150,21 +159,21 @@ function enemyDropProb(array){
 function makeEnemyDrop(array){
     var tempRandom = random(array);
     var randomElement = random(tempRandom);
-    console.log(randomElement);
-    
-    if(randomElement.size > 0){
+
+    if(!randomElement.isDel){
         var enemyDrop = new DropEnemy(randomElement.x, randomElement.y);
         enemyDrops.push(enemyDrop);
     }
 }
 
 function keyPressed(){
-    if (keyCode === UP_ARROW) {
+    if (keyCode === UP_ARROW && drops.length<3) {
+        playSound(0);
         var drop = new Drop(ship.x, height);
         drops.push(drop);
       }
 }
-function nyArray(){
+function newArray(){
     posX = 1;
     posY = 1;
     speedX = hastighet;
@@ -175,13 +184,32 @@ function nyArray(){
         }
     }
 }
-function erTomt(array){
+function isEmpty(array){
     for(let i = 0; i<array.length; i++){
-        console.log(array.length);
         for(let j = 0; j<array[i].length; j++)
         if(array[i][j].size>0){
             return false;
         }
     }
     return true;
+}
+function playSound(lyd){
+    if(lydPaa){
+        lyder[lyd].playMode("restart");
+        lyder[lyd].play();
+    }
+}
+function gameOver(){
+    playSound(2);
+    textSize(100);
+    stroke(40);
+    strokeWeight(10);
+    text("Game Over!", 120, 300);
+    noStroke();
+    noLoop();
+    setTimeout(function(){location.reload(true)},100);
+    if(score>parseInt(localStorage.getItem("highscore"))){ //Setter ny highscore hvis scoren er høyere enn nåværende highscore
+        localStorage.setItem("highscore", score);
+    }
+    
 }

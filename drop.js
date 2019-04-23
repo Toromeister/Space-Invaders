@@ -6,8 +6,7 @@ class Drop{
         this.toDel = false;
     }
     show(){
-        
-        fill(150, 0, 255);
+        fill(0, 0, 255);
         ellipse(this.x, this.y-40, this.r*2, this.r*2);
     }
     hits(enemy){
