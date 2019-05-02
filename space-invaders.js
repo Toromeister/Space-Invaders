@@ -15,7 +15,7 @@ var score = 0;
 var ship;
 var bildeShip
 var bildeEnemy;
-var lydPaa = false; //Anbefaler å ha lyd av grunnet lag etter et par runder, bare bytt verdien til false
+var lydPaa = true; //Anbefaler å ha lyd av grunnet lag etter et par runder, bare bytt verdien til false
 var lyder = [];
 
 function preload(){
@@ -86,7 +86,7 @@ function draw(){
                 enemyArray[i][j].toDel = false; 
                 enemyArray[i][j].isDel = true;
                 if(isEmpty(enemyArray)){
-                    hastighet += 0.2;
+                    hastighet += 0.4;
                     newArray();
                 }
             }
